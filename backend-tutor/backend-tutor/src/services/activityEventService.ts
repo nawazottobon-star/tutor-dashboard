@@ -14,6 +14,8 @@ export type LearnerStatusRow = {
   eventId: string;
   userId: string;
   courseId: string;
+  fullName?: string | null;
+  email?: string | null;
   moduleNo: number | null;
   topicId: string | null;
   eventType: string;
@@ -94,6 +96,8 @@ export async function getLatestStatusesForCourse(courseId: string): Promise<Lear
       ranked.event_id AS "eventId",
       ranked.user_id AS "userId",
       ranked.course_id AS "courseId",
+      u.full_name AS "fullName",
+      u.email AS "email",
       ranked.module_no AS "moduleNo",
       ranked.topic_id AS "topicId",
       ranked.event_type AS "eventType",
@@ -115,6 +119,7 @@ export async function getLatestStatusesForCourse(courseId: string): Promise<Lear
       FROM learner_activity_events
       WHERE course_id = ${courseId}::uuid
     ) ranked
+    LEFT JOIN users u ON u.user_id = ranked.user_id
     WHERE ranked.rn <= 20
   `);
 

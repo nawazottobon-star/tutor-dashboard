@@ -75,6 +75,8 @@ type ActivityLearner = {
   eventId?: string;
   userId: string;
   courseId: string;
+  fullName?: string | null;
+  email?: string | null;
   moduleNo: number | null;
   topicId: string | null;
   topicTitle?: string | null;
@@ -1007,7 +1009,11 @@ export default function TutorDashboardPage() {
                       <div className="max-h-[450px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 hover:scrollbar-thumb-slate-300 scroll-smooth pr-2 pb-12">
                         <div className="space-y-2">
                           {(activityResponse?.learners ?? []).map((learner) => {
-                            const identity = learnerDirectory.get(learner.userId);
+                            const directoryIdentity = learnerDirectory.get(learner.userId);
+                            const identity = {
+                              fullName: learner.fullName || directoryIdentity?.fullName,
+                              email: learner.email || directoryIdentity?.email
+                            };
                             const key = (learner.derivedStatus ?? 'unknown') as keyof typeof statusMeta;
                             const meta = statusMeta[key];
                             const isActive = selectedLearnerId === learner.userId;
@@ -1030,12 +1036,12 @@ export default function TutorDashboardPage() {
                                   <div className="flex items-start justify-between gap-3">
                                     <div>
                                       <p className="text-sm font-semibold text-slate-900 line-clamp-1">
-                                        {identity?.fullName ?? 'Learner'}{' '}
-                                        {!identity?.fullName && (
+                                        {identity.fullName ?? 'Learner'}{' '}
+                                        {!identity.fullName && (
                                           <span className="text-xs text-slate-500">({learner.userId.slice(0, 6)})</span>
                                         )}
                                       </p>
-                                      <p className="text-[11px] text-slate-500 truncate">{identity?.email ?? 'Email unavailable'}</p>
+                                      <p className="text-[11px] text-slate-500 truncate">{identity.email ?? 'Email unavailable'}</p>
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
                                       <Badge variant="secondary" className={`${meta.badgeClass} border-0 text-[10px]`}>
