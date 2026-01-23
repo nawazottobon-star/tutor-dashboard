@@ -93,12 +93,12 @@ export function SiteLayout({
       className={cn(FONT_INTER_STACK, "min-h-screen w-full")}
       style={{ background: DASHBOARD_GRADIENT_BG }}
     >
-      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-4">
+      <div className="mx-auto max-w-[96%] py-4 sm:py-8">
         <main
           {...restMainProps}
           className={cn(
             "relative overflow-hidden rounded-[22px] bg-white shadow-2xl",
-            "px-4 py-6 sm:px-6 sm:py-8 lg:px-8",
+            "p-6 sm:p-8 lg:p-10",
             "transition-all duration-500",
             mainClassName,
             className,

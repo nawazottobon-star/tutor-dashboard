@@ -1,5 +1,5 @@
 export const DASHBOARD_GRADIENT_BG =
-  'radial-gradient(1200px 800px at 15% -5%, #0ea5a746 0%, transparent 60%), radial-gradient(1200px 800px at 110% 20%, #22c55e33 0%, transparent 60%), linear-gradient(135deg,#0e6a5f,#0a3d35 70%,#072c28)';
+  'radial-gradient(1200px 800px at 15% -5%, rgba(14, 165, 167, 0.15) 0%, transparent 60%), radial-gradient(1200px 800px at 110% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 60%), linear-gradient(135deg, #f8fafc, #f1f5f9 70%, #e2e8f0)';
 
 export const DASHBOARD_CARD_SHADOW = '0 20px 50px rgba(2,6,23,.25)';
 
