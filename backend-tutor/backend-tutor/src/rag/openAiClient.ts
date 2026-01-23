@@ -123,15 +123,17 @@ export async function generateTutorCopilotAnswer(prompt: string): Promise<string
       "- For cohort comparisons, present data in a structured format\n" +
       "- Flag at-risk learners (< 50% completion) when relevant\n" +
       "- Keep responses concise but complete (3-8 sentences depending on complexity)\n\n" +
-      "DATA RULES:\n" +
       "- Use ONLY the provided learner roster, cohort details, and stats\n" +
       "- Never invent or assume data not explicitly provided\n" +
-      "- If information is missing, state it clearly\n" +
-      "- When listing students, use their actual names from the data\n\n" +
+      "- SEARCH FOR STUDENTS: When asked about a specific student, ALWAYS search the 'Detailed roster' section for the line starting with '[STUDENT] name=\"Target Name\"'. Use the EXACT 'INDIVIDUAL PROGRESS' percentage and module count from that specific line.\n" +
+      "- ANALYZE FRICTION: If asked why a student is stalled or why performance is low, look at the 'Recent Signals' on their roster line. These contains specific events like 'Idle pattern detected', 'Quiz failed', or 'Tutor prompt asked'. Use these SPECIFIC signals to explain the 'why' instead of giving generic advice.\n" +
+      "- QUOTE EXACT DATA: Always quote the performance percentage and module count (e.g., '12% and 1/8 modules') exactly as provided in the roster. Never generalize or round these numbers.\n" +
+      "- IGNORE GENERIC NAMES: If a name sounds like a tool (e.g., 'Brave Browser'), treat it strictly as a student name if it appears in the roster.\n" +
+      "- NO GUESSING: Never invent data. If 'Recent Signals' are missing, say 'No detailed activity logs are available for this period'.\n" +
+      "- If information is missing, state it clearly\n\n" +
       "EXAMPLES:\n" +
-      "Q: 'How many students in cohort 2?' → Answer with cohort 2 data only\n" +
-      "Q: 'How many students total?' → Answer with course-wide total across all cohorts\n" +
-      "Q: 'Which cohort has most students?' → Compare all cohorts and identify the largest",
+      "Q: 'Why did Brave Browser perform low?' → Find '[STUDENT] name=\"Brave Browser\"'. Answer: 'Brave Browser has a completion rate of 12% (1/8 modules). Recent signals show they triggered a tab_hidden event after viewing a lesson, suggesting they may be distracted or disengaged.'\n" +
+      "Q: 'What is the progress of Brave Browser?' → Look for '[STUDENT] name=\"Brave Browser\"' in the roster. If it says 'INDIVIDUAL PROGRESS: 12%', answer 12%.\n",
     userPrompt: prompt,
     temperature: 0.15,
   });

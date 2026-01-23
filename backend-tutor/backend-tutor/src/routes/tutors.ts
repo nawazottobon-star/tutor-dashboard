@@ -135,6 +135,12 @@ tutorsRouter.post(
       ].join("\n");
 
       const answer = await generateTutorCopilotAnswer(prompt);
+
+      console.log(`[ASSISTANT DEBUG] Question: "${question}"`);
+      console.log(`[ASSISTANT DEBUG] Course: ${courseId}, Cohort: ${cohortId}`);
+      console.log(`[ASSISTANT DEBUG] Snapshot Roster Check:`, snapshotText.split('\n').filter(l => l.includes('Brave Browser')));
+      console.log(`[ASSISTANT DEBUG] Answer Length: ${answer.length}`);
+
       res.status(200).json({ answer });
     } catch (error) {
       console.error("Tutor assistant query failed", error);
