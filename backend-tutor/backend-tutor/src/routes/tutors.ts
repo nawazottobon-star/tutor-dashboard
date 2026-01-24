@@ -125,21 +125,12 @@ tutorsRouter.post(
     }
 
     try {
-      const snapshot = await buildTutorCourseSnapshot(courseId, cohortId);
-      const snapshotText = formatTutorSnapshot(snapshot);
-      const prompt = [
-        snapshotText,
-        "",
-        `Tutor question: ${question}`,
-        "Answer:",
-      ].join("\n");
-
-      const answer = await generateTutorCopilotAnswer(prompt);
-
-      console.log(`[ASSISTANT DEBUG] Question: "${question}"`);
-      console.log(`[ASSISTANT DEBUG] Course: ${courseId}, Cohort: ${cohortId}`);
-      console.log(`[ASSISTANT DEBUG] Snapshot Roster Check:`, snapshotText.split('\n').filter(l => l.includes('Brave Browser')));
-      console.log(`[ASSISTANT DEBUG] Answer Length: ${answer.length}`);
+      // Call the new function-based chatbot
+      const answer = await generateTutorCopilotAnswer({
+        question,
+        courseId,
+        cohortId,
+      });
 
       res.status(200).json({ answer });
     } catch (error) {
