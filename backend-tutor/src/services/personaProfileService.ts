@@ -1,4 +1,4 @@
-import type { LearnerPersonaProfileKey, Prisma } from "@prisma/client";
+import { type LearnerPersonaProfileKey, Prisma } from "@prisma/client";
 import { prisma } from "./prisma";
 import { classifyLearnerPersona } from "../rag/openAiClient";
 import { PERSONA_KEYS, PERSONA_PROFILE_VERSION } from "./personaPromptTemplates";
@@ -94,7 +94,7 @@ export async function upsertPersonaProfile(params: {
     },
     update: {
       personaKey: params.personaKey,
-      rawAnswers: params.rawAnswers,
+      rawAnswers: params.rawAnswers ?? Prisma.JsonNull,
       analysisSummary: params.analysisSummary,
       analysisVersion: params.analysisVersion,
     },
@@ -102,7 +102,7 @@ export async function upsertPersonaProfile(params: {
       userId: params.userId,
       courseId: params.courseId,
       personaKey: params.personaKey,
-      rawAnswers: params.rawAnswers,
+      rawAnswers: params.rawAnswers ?? Prisma.JsonNull,
       analysisSummary: params.analysisSummary,
       analysisVersion: params.analysisVersion,
     },

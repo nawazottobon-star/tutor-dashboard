@@ -25,9 +25,22 @@ async function startServer(): Promise<void> {
 
   const shutdown = async () => {
     console.log("Shutting down server...");
-    server.close();
-    await prisma.$disconnect();
-    process.exit(0);
+
+    // Force exit after 2 seconds if clean shutdown hangs (prevents port 4000 ghost processes)
+    const forceExit = setTimeout(() => {
+      console.log("Force exiting server...");
+      process.exit(0);
+    }, 2000);
+
+    try {
+      server.close();
+      await prisma.$disconnect();
+    } catch (err) {
+      console.error("Shutdown error", err);
+    } finally {
+      clearTimeout(forceExit);
+      process.exit(0);
+    }
   };
 
   process.on("SIGINT", shutdown);
