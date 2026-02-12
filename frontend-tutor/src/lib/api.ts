@@ -1,4 +1,11 @@
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+const rawBaseUrl =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+
+// 🔍 Debug log (safe, does not affect functionality)
+if (typeof window !== "undefined") {
+  console.log("API_BASE_URL (resolved at build time):", rawBaseUrl);
+}
+
 export const API_BASE_URL = rawBaseUrl.replace(/\/+$/, "");
 
 export function buildApiUrl(path: string): string {
