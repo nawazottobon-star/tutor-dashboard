@@ -3,6 +3,7 @@ import { Star, Send } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { buildApiUrl } from "@/lib/api";
+import { apiRequest } from "@/lib/queryClient";
 import type { StoredSession } from "@/types/session";
 
 type ColdCallPrompt = {
@@ -112,7 +113,7 @@ export default function ColdCalling({ topicId, session, onTelemetryEvent }: Cold
     setLoading(true);
     setAccessMessage(null);
     try {
-      const response = await fetch(buildApiUrl(`/api/cold-call/prompts/${topicId}`), {
+      const response = await apiRequest("GET", `/api/cold-call/prompts/${topicId}`, undefined, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
 
@@ -205,13 +206,11 @@ export default function ColdCalling({ topicId, session, onTelemetryEvent }: Cold
     }
     setSubmitting(true);
     try {
-      const response = await fetch(buildApiUrl("/api/cold-call/messages"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ promptId: prompt.promptId, body: responseText.trim() }),
+      const response = await apiRequest("POST", "/api/cold-call/messages", {
+        promptId: prompt.promptId,
+        body: responseText.trim(),
+      }, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (!response.ok) {
@@ -243,13 +242,11 @@ export default function ColdCalling({ topicId, session, onTelemetryEvent }: Cold
     }
     setReplySubmitting(true);
     try {
-      const response = await fetch(buildApiUrl("/api/cold-call/replies"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ parentId: replyTargetId, body: replyText.trim() }),
+      const response = await apiRequest("POST", "/api/cold-call/replies", {
+        parentId: replyTargetId,
+        body: replyText.trim(),
+      }, {
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
 
       if (!response.ok) {
@@ -279,8 +276,7 @@ export default function ColdCalling({ topicId, session, onTelemetryEvent }: Cold
     setPendingStars((prev) => new Set(prev).add(message.messageId));
     try {
       if (message.starredByMe) {
-        const response = await fetch(buildApiUrl(`/api/cold-call/stars/${message.messageId}`), {
-          method: "DELETE",
+        const response = await apiRequest("DELETE", `/api/cold-call/stars/${message.messageId}`, undefined, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         if (!response.ok && response.status !== 204) {
@@ -296,13 +292,10 @@ export default function ColdCalling({ topicId, session, onTelemetryEvent }: Cold
         );
         emitTelemetry("cold_call.star", { messageId: message.messageId, action: "remove" });
       } else {
-        const response = await fetch(buildApiUrl("/api/cold-call/stars"), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ messageId: message.messageId }),
+        const response = await apiRequest("POST", "/api/cold-call/stars", {
+          messageId: message.messageId,
+        }, {
+          headers: { Authorization: `Bearer ${accessToken}` },
         });
         if (!response.ok) {
           const payload = await response.json().catch(() => null);
@@ -492,9 +485,8 @@ function ColdCallMessageCard({
               type="button"
               onClick={() => onToggleStar(message)}
               disabled={starDisabled}
-              className={`inline-flex items-center gap-1 font-semibold ${
-                message.starredByMe ? "text-[#f59e0b]" : "text-[#4a4845]"
-              }`}
+              className={`inline-flex items-center gap-1 font-semibold ${message.starredByMe ? "text-[#f59e0b]" : "text-[#4a4845]"
+                }`}
             >
               <Star className={`h-4 w-4 ${message.starredByMe ? "fill-[#f59e0b]" : ""}`} />
               <span>{message.starCount}</span>

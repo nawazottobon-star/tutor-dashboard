@@ -1,4 +1,5 @@
 import { buildApiUrl } from "@/lib/api";
+import { apiRequest } from "@/lib/queryClient";
 
 type TelemetryEvent = {
   courseId: string;
@@ -14,7 +15,7 @@ const MAX_BUFFER_SIZE = 20;
 
 let currentToken: string | null = null;
 let buffer: TelemetryEvent[] = [];
-let flushTimer: ReturnType<typeof setTimeout> | null = null;
+let flushTimer: any | null = null;
 
 const isBrowser = typeof window !== "undefined";
 
@@ -25,14 +26,13 @@ async function flushBuffer(): Promise<void> {
   const events = buffer.slice();
   buffer = [];
   try {
-    await fetch(buildApiUrl("/api/activity/events"), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${currentToken}`,
-      },
-      credentials: "include",
-      body: JSON.stringify({ events: events.map((event) => ({ ...event, occurredAt: event.occurredAt ?? new Date().toISOString() })) }),
+    await apiRequest("POST", "/api/activity/events", {
+      events: events.map((event) => ({
+        ...event,
+        occurredAt: event.occurredAt ?? new Date().toISOString(),
+      })),
+    }, {
+      headers: { Authorization: `Bearer ${currentToken}` },
     });
   } catch (error) {
     console.warn("Failed to send telemetry events", error);

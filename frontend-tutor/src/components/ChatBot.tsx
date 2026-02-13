@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, Send, X, Bot, User, Loader2 } from "lucide-react";
 import { buildApiUrl } from "@/lib/api";
+import { apiRequest } from "@/lib/queryClient";
 import { ensureSessionFresh, logoutAndRedirect, subscribeToSession } from "@/utils/session";
 import type { StoredSession } from "@/types/session";
 
@@ -92,6 +93,7 @@ export default function ChatBot({ courseName, courseId }: ChatBotProps) {
       const answer = await requestAssistantAnswer({
         courseId,
         courseName,
+        question,
         accessToken: freshSession.accessToken,
         // Send up to 10 previous messages for context
         history: messages
@@ -227,6 +229,8 @@ export default function ChatBot({ courseName, courseId }: ChatBotProps) {
 }
 
 async function requestAssistantAnswer(params: {
+  courseId?: string;
+  courseName?: string;
   question: string;
   accessToken: string;
   history?: Array<{ role: "user" | "assistant"; content: string }>;
@@ -235,18 +239,13 @@ async function requestAssistantAnswer(params: {
     throw new Error("I need to know which course you're viewing before I can help.");
   }
 
-  const response = await fetch(buildApiUrl("/api/assistant/query"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${params.accessToken}`,
-    },
-    body: JSON.stringify({
-      question: params.question,
-      courseId: params.courseId,
-      courseTitle: params.courseName,
-      history: params.history,
-    }),
+  const response = await apiRequest("POST", "/api/assistant/query", {
+    question: params.question,
+    courseId: params.courseId,
+    courseTitle: params.courseName,
+    history: params.history,
+  }, {
+    headers: { Authorization: `Bearer ${params.accessToken}` },
   });
 
   if (response.status === 401) {

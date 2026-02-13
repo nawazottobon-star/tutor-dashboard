@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { buildApiUrl } from "@/lib/api";
+import { apiRequest } from '@/lib/queryClient';
 import { writeStoredSession, resetSessionHeartbeat } from '@/utils/session';
 import type { StoredSession } from '@/types/session';
 
@@ -495,10 +496,9 @@ const BecomeTutor: React.FC = () => {
     setIsLoggingIn(true);
 
     try {
-      const response = await fetch("/api/tutors/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail.trim().toLowerCase(), password: loginPassword }),
+      const response = await apiRequest("POST", "/api/tutors/login", {
+        email: loginEmail.trim().toLowerCase(),
+        password: loginPassword
       });
 
       if (!response.ok) {
@@ -562,11 +562,7 @@ const BecomeTutor: React.FC = () => {
     };
 
     try {
-      const res = await fetch("/api/tutor-applications", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await apiRequest("POST", "/api/tutor-applications", payload);
 
       if (!res.ok) {
         const error = await res.json().catch(() => null);
