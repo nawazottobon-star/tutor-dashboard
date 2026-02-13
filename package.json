@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "docx": "^9.5.1",
+    "mammoth": "^1.11.0"
+  }
+}
